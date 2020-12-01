@@ -203,7 +203,7 @@ def testGraphIst(filename):
         for key in t:
             for k in t[key]:
                 sum+=t[key][k]
-        costs.append(sum/(g.vg.number_of_edges()-g.vg.number_of_nodes()))
+        costs.append(sum)
         print(g.vg.size(weight="weight"))
     print (costs)
     plt.plot(costs)

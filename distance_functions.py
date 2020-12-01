@@ -81,7 +81,7 @@ def area_of_pair(y_data, treshold):
 
     area2 = numpy.trapz(listForIntegral, dx=1)
     res=area2/(len(y_data)+1)
-    # print (area2)
+    #print (res)
     return res
 
 
