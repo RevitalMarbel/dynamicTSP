@@ -19,7 +19,7 @@ object_by_time={}
 
 
 class VG:
-    def __init__(self, nodes,names,dist_file_name,max_neighbors=3, time=0, minDist=1500 , initPher=1, ratio=1,upperBpund=1000):
+    def __init__(self, nodes, names, dist_file_name,upp_bound=500000, max_neighbors=3, time=0, minDist=15000, initPher=1, ratio=1):
         self.nodes=nodes
         self.time=int(time)
         self.names=names
@@ -69,8 +69,8 @@ class VG:
         #basicly - add the edges according the vg mindist factor
         #self.compute_edges_robust()
 
-
-        self.compute_vg_for_robust(upperBpund, ratio)#
+        #print('567_624', self.dists)
+        self.compute_vg_for_robust( upperBound= upp_bound, ratio=ratio)
         #self.compute_vg(minDist=minDist,func=0)
 
         self.init_ants()
@@ -186,9 +186,12 @@ class VG:
                 self.vg[u][v]["robust"] = self.compute_edge_robust(v, u)
 
     def compute_edge_robust(self, i,j):
+
         if str(i)+"_"+str(j) in  self.dists:
+            #print(str(i)+"_"+str(j), self.dists[str(i) + "_" + str(j)])
             robust=self.dists[str(i)+"_"+str(j)]
         else:
+            #print(str(i) + "_" + str(j), -1)
             robust=-1
         return robust
 
@@ -197,23 +200,26 @@ class VG:
         max = 1
         for i in self.vg.nodes:
             for j in self.vg.nodes:
+                # i = i[1]['name']
+                # j = j[1]['name']
                 if (i < j):
+                      #  print(i[1])
                         r = self.compute_edge_robust(i,j)
                         d=self.distance(i,j, ratio)
-                        if r==-1:
-                            r=d
-                        if (len(edges_by_time) > 0):
-                            diff_c = 0
-                            if (r <= upperBound / ratio):
-                                self.vg.add_edge(i, j, weight=d ,robust=r, ph=self.initPher, update=0, diff=diff_c)
-                                max = self.vg[i][j]['weight']
-                                min = self.vg[i][j]['weight']
-                        else:  # first time ....
+                        if r!=-1:
+                                #r=d
+                            if (len(edges_by_time) > 0):
+                                diff_c = 0
+                                if (r <= upperBound / ratio):
+                                    self.vg.add_edge(i, j, weight=d ,robust=r, ph=self.initPher, update=0, diff=diff_c)
+                                    max = self.vg[i][j]['weight']
+                                    min = self.vg[i][j]['weight']
+                            else:  # first time ....
 
-                            if (r <= upperBound / ratio):
-                                self.vg.add_edge(i, j, weight=d,robust=r, ph=self.initPher, update=0, diff=d)
-                                max = self.vg[i][j]['weight']
-                                min = self.vg[i][j]['weight']
+                                if (r <= upperBound / ratio):
+                                    self.vg.add_edge(i, j, weight=d,robust=r, ph=self.initPher, update=0, diff=d)
+                                    max = self.vg[i][j]['weight']
+                                    min = self.vg[i][j]['weight']
         for w in self.vg.edges.data('weight'):
             w=w[2]
             if max<w:
@@ -510,7 +516,7 @@ def CreateVGFromFile(node_f_name, names_f_node, disances_f_name, num_of_sats=600
     for i in range(len(nodes)):
         nodes[i] = nodes[i][:num_of_sats]
         names[i] = names[i][:num_of_sats]
-        G= VG(nodes[i],names[i],disances_f_name,max_neighbors, time=i, minDist=minDist, initPher=initPher, ratio=ratio )
+        G= VG(nodes[i], names[i], disances_f_name, max_neighbors, time=i, minDist=minDist, initPher=initPher, ratio=ratio)
         gList.append(G)
         print("graph: ", i, " created")
 

@@ -178,7 +178,8 @@ for q in range(0,r):
             t_sat_lon.append(sat_lon)
             #print(math.degrees(float(s)), "seperation", s ,"degrees")
 
-
+    print(nodes)
+    print(sat_name)
     G=visibilityGraph_for_AC.VG(nodes, sat_name,dist_file_name="distances_5_2" ,time= q,minDist=T_thresh, ratio=ratio)
 
     #nx.write_gpickle(G, str(num_of_sat)+" "+str(jumps)+"_"+str(q))

@@ -54,10 +54,11 @@ def get_trees_diff(file_name):
 
 
 ##this function returns a dictionary that contains all nodes pairs( keys) and the sin function (values)
-def get_area_from_distances_file(file_name, tresh):
+def  get_area_from_distances_file(file_name, tresh):
     dbfile = open(file_name, 'rb')
     dist = pickle.load(dbfile)
     res={}
+    sum=0.0
     #print(dist["1_2"])
     for key in dist:
         # #print(key, '=>', dist[key])
@@ -65,20 +66,21 @@ def get_area_from_distances_file(file_name, tresh):
         # res[key] = fit_sin(tt, numpy.array(dist[key]))
         area=area_of_pair(dist[key], tresh)
         res[key]=area
+        sum+=area
+    print(sum/float(len(dist.values())+1))
     dbfile.close()
     return res
 
 
 def area_of_pair(y_data, treshold):
     tt = numpy.linspace(0, len(y_data), len(y_data))
-    listofTresh = [treshold] * len(y_data)
+
     listForIntegral=[]
     for i in range(len(y_data)):
-        if(y_data[i] - listofTresh[i]>0):
-            listForIntegral.append(y_data[i] - listofTresh[i])
+        if(y_data[i] - treshold >0):
+            listForIntegral.append(y_data[i] - treshold)
         else:
             listForIntegral.append(0)
-
     area2 = numpy.trapz(listForIntegral, dx=1)
     res=area2/(len(y_data)+1)
     #print (res)

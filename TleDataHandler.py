@@ -97,12 +97,12 @@ def createFilesFromTLe(times, dt, distance_csv_file=False, lat_lon__csv_file=Fal
                             print(e)
 
                 if(q==0):
-                    open_distaces_file(f_name, sats,distance_csv_file)
-                write_distences_to_file(f_name,sat_lat,sat_lon,lastHourDateTime,distance_csv_file)
+                    open_distaces_file(f_name, sats,sat_name,distance_csv_file)
+                write_distences_to_file(f_name,sat_lat,sat_lon,lastHourDateTime,sat_name,distance_csv_file)
 
                 if (lat_lon__csv_file == True):
                     if (q == 0):
-                        open_lat_lon_file(f_lat_lon_name, sat_lat, sat_lon)
+                        open_lat_lon_file(f_lat_lon_name, sat_lat, sat_lon, sat_name)
                     write_lat_lon_file(f_lat_lon_name, sat_lat, sat_lon, lastHourDateTime)
 
                 t_sat_lat_lon.append([sat_lat, sat_lon])
@@ -129,24 +129,24 @@ def createFilesFromTLe(times, dt, distance_csv_file=False, lat_lon__csv_file=Fal
 
 
 
-def open_distaces_file(name, sats,csv=True):
+def open_distaces_file(name, sats,sat_names,csv=True):
     if csv==True:
         f = open(name+".csv", "w")
         f.write("time")
         for i in range(1,len(sats)-falcons,seperations):
             for j in range(i+1,len(sats)-falcons,seperations):
-                f.write(","+str(i)+"_"+str(j))
-                distances[str(i)+"_"+str(j)]=[]
+                f.write(","+str(sat_names[i])+"_"+str(sat_names[j]))
+                distances[str(sat_names[i])+"_"+str(sat_names[j])]=[]
         f.write("\n")
         f.close()
     else: #add only distances
         for i in range(1,len(sats)-falcons,seperations):
             for j in range(i+1,len(sats)-falcons,seperations):
-                distances[str(i)+"_"+str(j)]=[]
+                distances[str(sat_names[i])+"_"+str(sat_names[j])]=[]
 
 
 #stas is a list of sats
-def write_distences_to_file(name, sat_lat,sat_lon, time, csv=True):
+def write_distences_to_file(name, sat_lat,sat_lon, time ,sat_names, csv=True):
     if csv==True:
         f = open(name+".csv", "a")
         f.write(str(time))
@@ -156,7 +156,7 @@ def write_distences_to_file(name, sat_lat,sat_lon, time, csv=True):
                 #d = ephem.separation(sats[i], sats[j])
                 #d=math.degrees(float(d))
                 d=distance_functions.distance4(sat_lat[i],sat_lat[j], sat_lon[i],sat_lon[j])
-                distances[str(i)+"_"+str(j)].append(d)
+                distances[str(sat_names[i])+"_"+str(sat_names[j])].append(d)
                 f.write(","+str(d))
 
         f.write("\n")
@@ -166,7 +166,7 @@ def write_distences_to_file(name, sat_lat,sat_lon, time, csv=True):
         for i in range(1,len(sat_lat)-falcons,seperations):
             for j in range(i+1,len(sat_lat)-falcons,seperations):
                 d=distance_functions.distance4(sat_lat[i],sat_lat[j], sat_lon[i],sat_lon[j])
-                distances[str(i)+"_"+str(j)].append(d)
+                distances[str(sat_names[i])+"_"+str(sat_names[j])].append(d)
 
 
 
@@ -178,11 +178,11 @@ def write_lat_lon_file(name, lat,lon,time):
     f.write("\n")
     f.close()
 
-def open_lat_lon_file(name,  lat,lon):
+def open_lat_lon_file(name,  lat,lon,sat_names):
     f = open(name+".csv", "w")
     f.write("time")
     for i in range(1,len(lat)-falcons,seperations):
-        f.write("," + str(i))
+        f.write("," + str(sat_names[i]))
 
     f.write("\n")
     f.close()
@@ -199,7 +199,7 @@ def testGraphIst(filename):
 
     for g in gl:
         sum = 0
-        t=dict(nx.all_pairs_dijkstra_path_length(g.vg))
+        t=dict(nx.all_pairs_dijkstra_path_length(g.vg, weight="weight"))
         for key in t:
             for k in t[key]:
                 sum+=t[key][k]
@@ -211,16 +211,16 @@ def testGraphIst(filename):
 
 
     gl[0].draw_graph(draw=True)
-    gl[5].draw_graph(draw=True)
-    gl[10].draw_graph(draw=True)
+    gl[1].draw_graph(draw=True)
+    #gl[10].draw_graph(draw=True)
     print(len(gl[0].nodes))
 
 
 
 def main():
-    TestFileCreate("distances_5_10_names" ,"distances_5_10_nodes","distances_5_10",numOfSat=300 )
-    testGraphIst("distances_5_10_names_graphs")
-    #createFilesFromTLe(5,10,False,False,VG_files=True)
+    TestFileCreate("distances_10_15_names" ,"distances_10_15_nodes","distances_10_15",numOfSat=400 )
+    testGraphIst("distances_10_15_names_graphs")
+    #createFilesFromTLe(10,15,False,False,VG_files=True)
 
 if __name__ == "__main__":
     main()
